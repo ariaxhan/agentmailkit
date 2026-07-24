@@ -1,0 +1,45 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "agentmailkit"
+version = "0.1.0"
+description = "Local-first engine for scheduled, LLM-generated email digests that read your own data and never leave your machine."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [{ name = "Aria Han" }]
+keywords = ["email", "llm", "agent", "automation", "digest", "scheduler", "local-first", "claude", "openai", "newsletter"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Communications :: Email",
+    "Topic :: Office/Business :: Scheduling",
+]
+
+# Deliberately near-zero required deps: the core runs on the stdlib so agentmailkit
+# stays trivially installable. Delivery/model/source backends pull their own
+# libs only when you actually enable them (see [project.optional-dependencies]).
+dependencies = []
+
+[project.optional-dependencies]
+gmail = ["google-api-python-client", "google-auth", "google-auth-oauthlib"]
+anthropic = ["anthropic"]
+openai = ["openai"]
+cloud = []  # cloudflare deploy adapter uses the wrangler CLI, no python dep
+all = ["agentmailkit[gmail,anthropic,openai]"]
+dev = ["pytest", "ruff"]
+
+[project.urls]
+Homepage = "https://github.com/ariaxhan/agentmailkit"
+Source = "https://github.com/ariaxhan/agentmailkit"
+
+[project.scripts]
+agentmailkit = "agentmailkit.cli:main"
+amk = "agentmailkit.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/agentmailkit"]

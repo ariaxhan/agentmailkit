@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+
+# agentmailkit runtime
+out/                    # rendered/delivered email output
+*.pickle                # OAuth tokens - never commit
+.agentmailkit.json      # local overrides
+secrets.json
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/

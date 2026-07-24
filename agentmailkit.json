@@ -1,0 +1,7 @@
+{
+  "root": ".",
+  "jobs_dir": "jobs",
+  "default_to": "you@example.com",
+  "sender": "you@example.com",
+  "default_model": "echo"
+}
