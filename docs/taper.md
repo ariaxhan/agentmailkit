@@ -4,7 +4,18 @@ An optional companion artifact. After the email is safely sent, agentmailkit can
 
 Where the digest says what happened, the piece is an abstract reply to it.
 
-> The Taper form comes from **[taper.badquar.to](https://taper.badquar.to)**, a journal of tiny computational literature where every piece must fit in a couple of kilobytes. The constraint is the medium. All credit for the form belongs there; this plugin only generates pieces in its spirit.
+> The Taper form comes from **[taper.badquar.to](https://taper.badquar.to)**, an online literary magazine for small computational pieces published by Bad Quarto, running since 2018. Every piece fits in a couple of kilobytes; the constraint is the medium. All credit for the form belongs there. This plugin only generates pieces in its spirit, and reading a few real ones will tell you more than this page can.
+
+## What the form actually is
+
+The generator brief is grounded in characteristics observed in real published pieces, because the obvious guesses are wrong. It is not "generative art with a caption".
+
+- **Language is usually the material.** Pieces are built from a small curated vocabulary, a set of nouns, a list of exclamations, the lines of a poem. The code arranges, reveals or destroys those words. It is a poem whose typesetting is an algorithm.
+- **It unfolds over time.** Words arrive one at a time on a timer, lines vanish in a shuffled order, a form animates frame by frame. A static composition is not a Taper piece.
+- **Committed palettes, often light.** A saturated ground (warm sand, ochre, acid yellow, hot blue) with dark earth-toned text is at least as common as black. Muddy grey on near-black is the classic failure.
+- **Type is a material.** Sizes vary dramatically inside one piece, from an enormous opening line to near-footnote. Serif is common.
+- **The whole viewport is the field**, with elements often absolutely positioned at randomised percentages rather than stacked in the middle.
+- **A closing gesture** when the sequence exhausts itself.
 
 [See a generated piece](https://ariaxhan.github.io/agentmailkit/samples/taper-piece.html)
 
