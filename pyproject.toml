@@ -9,7 +9,7 @@ description = "Local-first engine for scheduled, LLM-generated email digests tha
 readme = "README.md"
 requires-python = ">=3.9"
 license = { text = "MIT" }
-authors = [{ name = "Aria Han" }]
+authors = [{ name = "Aria Han", email = "ariaxhan@gmail.com" }]
 keywords = ["email", "llm", "agent", "automation", "digest", "scheduler", "local-first", "claude", "openai", "newsletter"]
 classifiers = [
     "Development Status :: 3 - Alpha",

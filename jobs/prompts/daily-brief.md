@@ -1,4 +1,4 @@
-You are writing Aria's daily brief for {date} ({day}).
+You are writing the daily brief for {date} ({day}).
 
 Use the material below to write a tight, skimmable HTML email. Lead with the one
 thing that matters most today. No preamble, no "here is your brief" throat-clearing.
