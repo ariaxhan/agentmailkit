@@ -4,217 +4,113 @@
 
 ### → [See real emails it produces](https://ariaxhan.github.io/agentmailkit/)
 
-Live samples, generated end to end: real APIs, a real model, the deterministic renderer. Nothing hand-written or touched up. Start there, it explains the project faster than this README can.
-
----
-
-Declare a job: a schedule, a prompt, some data sources, a delivery address. agentmailkit runs it on a cron, feeds your local data to an LLM, and emails you the result. A morning news brief, a research digest, a "what changed in my repos" summary, a content-idea bank. Each one is a JSON file plus a prompt, not a bespoke script.
+Live samples, generated end to end. Nothing hand-written. Start there, it explains this faster than the README can.
 
 ```bash
 pip install agentmailkit
-agentmailkit run daily-brief --dry-run    # builds and previews, never sends
+agentmailkit run morning-brief --dry-run
 ```
 
 MIT licensed. No account, no vendor, no cloud required.
 
 ---
 
-## The point is deterministic stability
+## What it is
 
-agentmailkit is **not** an autonomous agent. It does not decide what to do, wander your filesystem, or take actions you did not ask for.
-
-It is a **fixed pipeline**:
-
-```
-gather sources  ->  render prompt  ->  generate  ->  gate  ->  deliver  ->  post
-```
-
-The same job spec produces the same shaped output every single day. The LLM writes the *words*; the engine controls everything else. If you want an AI coworker that acts on its own, use an agent framework. If you want a digest that arrives correctly at 7am for the next two years, use this.
-
-## Why not just use ChatGPT / Claude / Gemini schedulers
-
-Every major assistant ships a scheduler now (ChatGPT **Tasks**, Claude Code **Routines**, Gemini **Scheduled Actions**, Copilot **Scheduled Prompts**). They share two hard limits, because they all execute in the vendor's cloud:
-
-1. **They cannot read the files on your computer.** ChatGPT blocks file access inside a task; the others only reach vendor-siloed data (a connected repo, Google Workspace, an M365 tenant). None can read `~/notes/` or a local SQLite database.
-2. **They cannot send real email from your inbox.** They deliver into their own app surfaces. There is no arbitrary Gmail or SMTP send.
-
-agentmailkit runs where your data already is. Nothing gets uploaded except the prompt you choose to send to your model, and with a local model, not even that.
-
-**The honest comparison.** Against cloud assistants that gap is structural. Against local-first OSS agents ([OpenClaw](https://github.com/steipete/openclaw), [Hermes](https://www.firecrawl.dev/blog/hermes-agent)) it is not: they also run locally, read files, and can email. The difference there is shape. Those are broad autonomous agents you configure down to a task. agentmailkit does one job, declaratively, with no autonomy to supervise.
-
-| | agentmailkit | Cloud schedulers | Local agents |
-|---|---|---|---|
-| Runs where | Your machine | Vendor cloud | Your machine |
-| Reads local files | Yes | No | Yes |
-| Sends from your inbox | Yes | No | Yes |
-| Deterministic output shape | Yes | No | No |
-| Autonomy to supervise | None | n/a | Yes |
-| Cost | OSS + your tokens | Paid plan | OSS + tokens |
-
----
-
-## Adding an email is two files
-
-**1. The job** (`jobs/daily-brief.json`):
+An email is **two files**: a JSON job and a markdown prompt.
 
 ```json
 {
-  "id": "daily-brief",
-  "schedule": "30 7 * * *",
-  "prompt": "daily-brief.md",
-  "model": "claude_cli:sonnet",
-  "sources": ["notes=recent:~/notes:3", "commits=shell:git log --oneline -10"],
-  "gates": ["nonempty", "min_length:400"],
+  "id": "morning-brief",
+  "schedule": "0 7 * * *",
+  "sources": ["papers=arxiv:cs.AI#6", "weather=weather:Brooklyn"],
+  "render": "warm",
   "delivery": "gmail",
-  "subject": "Daily brief - {date}"
+  "dedup": true
 }
 ```
 
-**2. The prompt** (`jobs/prompts/daily-brief.md`), referencing each source by its alias:
+The engine runs one fixed pipeline and never grows a special case:
 
-```markdown
-Write my brief for {date} ({day}).
-
-## What I wrote recently
-{notes}
-
-## Recent commits
-{commits}
-
-Keep it under 400 words. Lead with what matters most.
+```
+gather sources -> render prompt -> generate -> gate -> theme -> deliver -> post
 ```
 
-That is the whole extension model. No engine changes, ever.
+## Why not the built-in schedulers
 
-## Plugins
+ChatGPT **Tasks**, Claude **Routines**, Gemini **Scheduled Actions** and Copilot all execute in the vendor's cloud, which costs them two things:
 
-Everything type-specific is a named plugin resolved from the job spec.
+- **They cannot read the files on your computer.** Not `~/notes`, not a local database, not your git working tree.
+- **They cannot send real email from your inbox.** Output stays inside their app.
 
-| Kind | Built in | Contract |
+agentmailkit runs where your data already is. Nothing is uploaded except the prompt you choose to send to a model, and with a local model, not even that.
+
+**And it is deterministic.** It is not an autonomous agent: it does not decide things, wander your filesystem, or act unrequested. The model writes the words; the engine owns everything else, so the same job produces the same shaped email every run. Local OSS agents can also read files and send mail, but they are broad autonomous systems you configure down to a task. This does one job, predictably, for years.
+
+Full comparison including the honest counter-case: [docs/comparison.md](docs/comparison.md).
+
+## For agents
+
+**Hand your coding agent this link and it will set the whole thing up, asking you the right questions as it goes:**
+
+```
+https://github.com/ariaxhan/agentmailkit/blob/main/AGENTS.md
+```
+
+[AGENTS.md](AGENTS.md) is a complete setup runbook: what to ask you, how to install, how to build your first job, how to verify before anything can send, and how to schedule it. `CLAUDE.md` is a symlink to the same file, so they can never drift apart.
+
+## What ships
+
+| Job | Pulls | Interesting because |
 |---|---|---|
-| **source** | `file`, `glob`, `recent`, `shell`, `hf`, `arxiv` | `fn(ctx, arg) -> str` |
-| **model** | `echo`, `claude_cli`, `anthropic`, `openai` | `fn(ctx, prompt) -> str` |
-| **gate** | `nonempty`, `min_length`, `no_placeholder` | `fn(ctx, body)`, raise to reject |
-| **delivery** | `stdout`, `file`, `smtp`, `gmail` | `fn(ctx, subject, body, to) -> dict` |
-| **post** | `taper` | `fn(ctx, body)`, runs after a successful send |
-| **scheduler** | `launchd`, `cron`, `systemd`, `github`, `cloudflare` | emits host config |
+| `morning-brief` | weather, three news outlets, on-this-day | Outlets stay labelled, so the model can contrast their framing |
+| `curiosity` | archaeology and astronomy feeds, history | No work content at all, on purpose |
+| `research-digest` | Hugging Face, arXiv | Real ids, counts and links the model cannot invent |
+| `repo-pulse` | git log, diffstat, TODO markers | Reads your working tree, which no cloud scheduler can |
+| `daily-brief` | local files, git log | The minimal shape to copy |
 
-`shell` is the escape hatch: any local command's output becomes prompt context, so you are never blocked waiting for a plugin to exist.
+**Ten sources built in:** `file`, `glob`, `recent`, `shell`, `hf`, `arxiv`, `rss`, `news`, `history`, `weather`. Anything with a feed or an API joins them in about thirty lines.
 
-### Research sources are deterministic on purpose
+**Ideas worth stealing:** your city's council agendas, security advisories for your exact dependency list, exchange rates, a friend's blog, release notes for the tools you use, tide tables, ISS pass times over your house.
 
-The single most common failure of an LLM research digest is inventing a plausible paper title or a confident download count. `hf` and `arxiv` remove the opportunity: they query the Hugging Face Hub and arXiv APIs directly and hand the model **real** ids, figures, authors and links to cite verbatim. No model sits between the API and the fact.
+**Nothing repeats.** A seen-ledger strips already-sent items before the model ever sees them, so day two is not a reprint of day one.
 
-```json
-"sources": ["models=hf:full", "papers=arxiv:cs.AI:6", "learning=arxiv:q=retrieval augmented generation:5"]
-```
+## Docs
 
-`hf` takes `full`, `pulse` or `brief`. `arxiv` takes a category (`cs.AI`), an optional count (`cs.LG:5`), or a free-text search (`q=your terms:5`). Both fail open: if an API is down you get a short notice, never a broken run.
-
-### Taper: computational poetry as a companion piece
-
-`taper` is an optional post plugin. After the email is safely sent, it generates a tiny self-contained interactive HTML artifact responding to the same material: one file, no external assets, meaning carried by form and algorithm instead of prose. Where the digest says what happened, the piece is an abstract reply to it.
-
-The Taper form comes from **[taper.badquar.to](https://taper.badquar.to)**, a journal of tiny computational literature where every piece must fit in a couple of kilobytes. All credit for the form belongs there; this plugin only generates pieces in its spirit.
-
-```json
-"post": ["taper"],
-"options": { "taper": { "out_dir": "pieces", "max_bytes": 4096 } }
-```
-
-It runs only after delivery and fails open by design. A strange generative artifact must never be the reason a digest does not arrive.
-
-**Writing your own** takes one decorator:
-
-```python
-from agentmailkit.plugins import source
-
-@source("weather")
-def weather(ctx, arg):
-    return fetch_forecast(arg)     # any string; lands in the prompt as {weather}
-```
-
-Ship it in your own package under the `agentmailkit.plugins` entry-point group and it registers automatically. The core never learns your plugin's name.
-
-## Configuration
-
-One `agentmailkit.json`, no hardcoded paths, so the same install runs against any project:
-
-```json
-{
-  "root": ".",
-  "jobs_dir": "jobs",
-  "default_to": "you@example.com",
-  "sender": "you@example.com",
-  "default_model": "claude_cli:sonnet"
-}
-```
-
-Every field is overridable by `AGENTMAILKIT_*` environment variables. Secrets are referenced, never stored: OAuth tokens and API keys come from your keychain or env.
-
-## Scheduling, local or cloud
-
-```bash
-agentmailkit schedule cron        # or launchd, systemd, github, cloudflare
-```
-
-Emits ready-to-use host config from the same job specs. Local is the default. When you want laptop-closed uptime, the `cloudflare` or `github` emitters run the same jobs in CI or a Worker; you trade local file access for always-on.
-
-## Commands
-
-```bash
-agentmailkit list                       # configured jobs
-agentmailkit run <job> [--dry-run]      # run one job
-agentmailkit plugins                    # what is registered
-agentmailkit schedule <backend>         # emit scheduler config
-```
+| | |
+|---|---|
+| [Quickstart](docs/quickstart.md) | Five minutes to a real email |
+| [Setup guide for agents](AGENTS.md) | Hand this to your coding agent |
+| [Sources](docs/sources.md) | All ten, with arguments and examples |
+| [Jobs and prompts](docs/jobs.md) | Every job field, prompt conventions |
+| [Themes](docs/themes.md) | The renderer, palettes, enforced house style |
+| [Dedup](docs/dedup.md) | The seen-ledger contract |
+| [Delivery and config](docs/delivery.md) | Gmail, SMTP, gates, configuration |
+| [Models](docs/models.md) | Backends, and why they are text-only |
+| [Scheduling](docs/scheduling.md) | cron, launchd, systemd, CI, and the cloud tradeoff |
+| [Taper pieces](docs/taper.md) | The optional computational-poetry companion |
+| [Plugins](docs/plugins.md) | Write a source in about thirty lines |
+| [Comparison](docs/comparison.md) | Versus cloud schedulers and local agents, honestly |
 
 ## Install
 
 ```bash
-pip install agentmailkit               # core, standard library only
-pip install agentmailkit[gmail]        # + Gmail delivery
-pip install agentmailkit[all]          # + every model and delivery backend
+pip install agentmailkit            # core, standard library only
+pip install agentmailkit[gmail]     # + Gmail delivery
+pip install agentmailkit[all]       # + Anthropic and OpenAI backends
 ```
 
 The core has **zero required dependencies**. Backends pull their own libraries only when enabled.
 
-## Try it now
-
-The `jobs/` directory ships as a working library that runs with no API key and sends nothing. It is deliberately varied, because the range of things you can put in an email is the point:
-
-| Job | What it pulls | Why it is interesting |
-|---|---|---|
-| `morning-brief` | weather + three news outlets + on-this-day | Outlets stay labelled so the model can contrast their framing |
-| `curiosity` | archaeology + astronomy feeds + history | No work content at all, on purpose |
-| `research-digest` | Hugging Face + arXiv | Real ids, counts and paper links the model cannot invent |
-| `repo-pulse` | your git log, diffstat, TODO markers | Reads your actual working tree, which no cloud scheduler can |
-| `daily-brief` | local files + git log | The minimal shape to copy |
-
-```bash
-agentmailkit list
-agentmailkit run morning-brief --dry-run
-agentmailkit run curiosity --dry-run
-```
-
-Then make it yours: point a source at your own data, rewrite the prompt, set a schedule. `examples/` has the same jobs wired for real use with a real model, Gmail or SMTP delivery, and a taper piece.
-
-**Ideas worth stealing:** a feed of your city's council agendas, your bank's exchange-rate API, security advisories for your exact dependency list, a friend's blog, court filings, release notes for the tools you use, tide tables, the ISS pass times over your house. If it has a feed or an API, it can be in your inbox at 7am.
-
 ## Status
 
-Alpha (0.1.0). The engine, plugin system, sources, gates, delivery backends, scheduler emitters and dry-run all work and are exercised end to end.
+Alpha (0.1.0). Engine, plugins, dedup, themes, delivery and scheduler emitters all work and are exercised end to end against live APIs.
 
-**Roadmap**, in order:
-
-- A deterministic HTML theme, so digests are beautifully formatted without ever asking the model to write markup
-- Deduplication and a seen-ledger, so a daily digest never repeats itself
-- `agentmailkit quickstart`, to generate a working sample email set from your real data on first run
-- An agent-facing setup guide, so a coding agent can install and extend this without a human
+Next: a `quickstart` command that generates a working sample set from your own data on first run.
 
 ## Contributing
 
-Issues and pull requests welcome. The design rule that governs review: **behaviour is configuration, not code.** If a change adds an `if` to the engine for one email's sake, it probably wants to be a plugin instead.
+Issues and pull requests welcome. The rule that governs review: **behaviour is configuration, not code.** If a change adds an `if` to the engine for one email's sake, it probably wants to be a plugin.
 
 ## License
 

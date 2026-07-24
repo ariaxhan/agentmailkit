@@ -31,9 +31,11 @@ import re
 
 from ..plugins import render
 
-# Palette lifted from a real, long-running daily brief. Override per job via
-# options.theme, or globally via config.extra.theme.
-WARM = {
+# BASE defines every key the renderer will ever read. A named palette supplies only
+# what it changes and inherits the rest, so a partial or misspelled palette can never
+# raise a KeyError mid-render. Adding a theme is additive by construction: it cannot
+# affect any existing theme, because themes share nothing but this table of defaults.
+BASE = {
     "ground": "#fafaf8",
     "card": "#ffffff",
     "ink": "#2a2a2a",
@@ -45,8 +47,10 @@ WARM = {
     "mono": "'SF Mono','Fira Code',ui-monospace,monospace",
 }
 
+# Palette lifted from a real, long-running daily brief.
+WARM = {}                                   # BASE is already the warm palette
+
 SLATE = {
-    **WARM,
     "ground": "#f5f7fa",
     "ink": "#1f2933",
     "accent": "#4a7c9e",
@@ -55,7 +59,6 @@ SLATE = {
 }
 
 INK = {
-    **WARM,
     "ground": "#14161a",
     "card": "#1c1f26",
     "ink": "#e8e6e1",
@@ -228,10 +231,18 @@ def _shell(title: str, subtitle: str, tiles: str, cards, footer: str, p: dict) -
 
 
 def _palette(ctx, name):
-    base = dict(PALETTES.get(name, WARM))
-    base.update((getattr(ctx.config, "extra", {}) or {}).get("theme", {}))
-    base.update((ctx.job.options or {}).get("theme", {}))
-    return base
+    """BASE, then the named palette, then global overrides, then per-job overrides.
+
+    Every layer is a partial dict merged over BASE, so no layer can remove a key the
+    renderer needs. A typo in a palette produces a default colour, never a crash.
+    """
+    p = dict(BASE)
+    p.update(PALETTES.get(name, {}))
+    extra = getattr(ctx.config, "extra", {}) or {}
+    p.update((extra.get("themes", {}) or {}).get(name, {}))    # config-defined theme
+    p.update(extra.get("theme", {}) or {})                     # global override
+    p.update((ctx.job.options or {}).get("theme", {}) or {})   # per-job override
+    return p
 
 
 def _themed(name):
@@ -255,6 +266,32 @@ def _themed(name):
 
 for _name in PALETTES:
     render(_name)(_themed(_name))
+
+
+def register_palette(name: str, palette: dict = None):
+    """Add a theme at runtime.
+
+    Purely additive: themes share nothing but BASE, so a new one cannot alter or break
+    an existing one. Anything the palette omits falls back to BASE.
+
+        register_palette("forest", {"accent": "#3f7d4f", "ground": "#f4f7f4"})
+    """
+    PALETTES[name] = dict(palette or {})
+    render(name)(_themed(name))
+    return name
+
+
+def register_from_config(config) -> list:
+    """Register every theme declared under `extra.themes` in the config file.
+
+    This is the zero-code path: a name and a few colours in agentmailkit.json is a
+    complete theme, usable immediately as "render": "<name>".
+
+        "extra": { "themes": { "forest": { "accent": "#3f7d4f" } } }
+    """
+    extra = getattr(config, "extra", {}) or {}
+    return [register_palette(name, palette)
+            for name, palette in (extra.get("themes") or {}).items()]
 
 
 @render("plain")

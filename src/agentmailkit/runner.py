@@ -30,6 +30,12 @@ def _load_prompt(ctx: Context) -> str:
 
 def run(job: Job, config: Any, dry_run: bool = False) -> Dict[str, Any]:
     plugins.load_builtins()
+    # Themes declared in config become usable without touching any code.
+    try:
+        from .themes import builtin as _themes
+        _themes.register_from_config(config)
+    except ImportError:
+        pass
     ctx = Context.build(job, config, dry_run=dry_run)
     receipt: Dict[str, Any] = {"job": job.id, "date": ctx.date, "dry_run": dry_run, "steps": []}
 
