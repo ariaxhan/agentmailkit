@@ -31,32 +31,47 @@ from ..plugins import post, get as _get_plugin
 
 # The spirit, not a checklist. Kept in the code so a user gets good pieces with
 # zero configuration, and can override it entirely via options.taper.prompt.
-TAPER_BRIEF = """Generate a Taper piece: computational poetry.
+TAPER_BRIEF = """Generate a Taper piece: computational poetry, in the tradition of the
+Taper journal (taper.badquar.to), which publishes tiny computational literary works.
 
-CORE ESSENCE (spirit, not a checklist):
-- Computational poetry: meaning through form, algorithm and interaction. The medium is part of the message.
-- Constraint as creative force: one file, no external assets. One idea, maximum impact, minimum means.
-- Abstract and experiential. NOT an article, NOT a summary, NOT literal content. A poem in code.
-- Generative or interactive: the piece responds (click, hover, mousemove, time) or generates.
-  The interaction should feel like discovering a secret.
-- Self-contained: inline style and script only, no external resources, no images, no fonts to fetch.
+WHAT A TAPER PIECE ACTUALLY IS. Study these characteristics of the real form:
 
-VARY YOUR STYLE. Palette, typography and technique should differ run to run:
-dark or light or gradient, serif or mono or display. Taper is not one look.
+- **Language is usually the material.** Most pieces are built from a small curated
+  vocabulary: a set of nouns, a list of exclamations, the lines of a poem. The words
+  carry the meaning; the code arranges, reveals or destroys them. You are writing a
+  poem whose typesetting is an algorithm, not decorating a data visualisation.
+- **It unfolds over time.** Pieces reveal themselves. Words arrive one at a time on a
+  timer, lines vanish one by one in a shuffled order, a form animates frame by frame.
+  A static composition that just sits there is not a Taper piece.
+- **Committed palette.** Either a saturated LIGHT ground (warm sand, ochre, hot blue,
+  acid yellow) with dark earth-toned text, or true black with pure white and one hot
+  accent. Muddy grey text on near-black is the single most common failure. If you
+  cannot read it instantly at a glance, it has failed.
+- **Type is the material too.** Sizes vary dramatically inside one piece, from a huge
+  opening line down to near-footnote. Default serif is common and good. Vary this run
+  to run: serif, monospace, something enormous. Taper is not one look.
+- **The whole field is the canvas.** Elements land across the entire viewport, often
+  absolutely positioned at randomised percentages, not stacked politely in the middle.
+- **A closing gesture.** When the sequence exhausts itself, something resolves: a final
+  line, a last word, a state that says it is over.
+- **Tiny and dense.** The real pieces are around two kilobytes of actual work. Terse
+  code is part of the craft.
+
+Do NOT produce: a grid of faint dots, a dashboard, a chart, a progress meter, or an
+abstract shimmer with a caption underneath. Those are generative-art cliches, not
+computational literature.
 
 HARD RULES:
 1. Output EXACTLY ONE <section> element and nothing else. No markdown fence, no commentary.
 2. The opening tag must be: <section data-date='{date}' data-type='{slug}'>
 3. Scope every CSS selector under a unique class so the piece cannot leak styles into a host page.
-4. The piece must FILL THE VIEWPORT. Its outermost element inside the section needs
-   min-height:100vh (and its own background colour), so the piece occupies the whole
-   screen rather than collapsing to the height of its content. Centre the content
-   within that space. A piece that renders as a small strip at the top of a black page
-   is a failed piece.
+4. Your outermost element inside the section sets min-height:100vh and its own background.
 5. Stay under {max_bytes} bytes total.
 6. No external requests of any kind.
 
-THEMATIC SEED - today's material. Respond to its mood and shape. Do NOT restate it:
+THEMATIC SEED - today's material. Mine it for a VOCABULARY: the proper nouns, numbers,
+verbs and odd specifics worth setting in type. Then build the piece from those words.
+Respond to its mood; do NOT restate or summarise it:
 ---
 {seed}
 ---

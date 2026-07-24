@@ -3,78 +3,37 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Taper piece - agentmailkit sample</title>
 <style>
-  html,body{margin:0;padding:0;height:100%;background:#000;overflow-x:hidden}
-  body{display:flex;flex-direction:column;min-height:100vh}
-  section{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;min-height:100vh}
-  section>*:not(style):not(script){flex:1 1 auto}
+  html,body{margin:0;padding:0;min-height:100%;background:#000;overflow-x:hidden}
+  section{display:block;min-height:100vh}
   .back{position:fixed;top:12px;left:14px;z-index:99;
         font:13px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
         color:#888;text-decoration:none;mix-blend-mode:difference}
 </style></head><body>
 <a class="back" href="../index.html">&larr; all samples</a>
-<section data-date='2026-07-23' data-type='research-digest'>
-<style>
-.tpr823{min-height:100vh;background:#0a0a0c;color:#e8e4da;font-family:'Courier New',monospace;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;cursor:crosshair;}
-.tpr823 .hdr{position:absolute;top:6vh;left:0;right:0;text-align:center;letter-spacing:.5em;font-size:11px;color:#5a5850;text-transform:uppercase;}
-.tpr823 .cnt{position:absolute;bottom:6vh;left:0;right:0;text-align:center;font-size:11px;color:#5a5850;letter-spacing:.15em;}
-.tpr823 .cnt b{color:#e8e4da;font-weight:normal;}
-.tpr823 .grid{display:grid;gap:14px;}
-.tpr823 .d{width:8px;height:8px;border-radius:50%;background:#232226;transition:background .6s ease,transform .6s ease,box-shadow .6s ease;}
-.tpr823 .d.near{background:#3a3830;transform:scale(1.3);}
-.tpr823 .d.lit{background:#e8c76a;box-shadow:0 0 10px 2px rgba(232,199,106,.5);transform:scale(1.6);}
-.tpr823 .msg{position:absolute;font-size:10px;color:#8a8578;letter-spacing:.3em;top:12vh;opacity:0;transition:opacity 1.2s ease;text-align:center;left:0;right:0;}
-.tpr823 .msg.on{opacity:1;}
+<section data-date='2026-07-23' data-type='research-digest'><div class="tpr-wrap"><style>
+.tpr-wrap{min-height:100vh;background:#f2c400;position:relative;overflow:hidden;font-family:Georgia,serif;color:#2b1d00}
+.tpr-wrap span{position:absolute;opacity:0;transform:translateY(12px);transition:opacity 1.1s ease,transform 1.1s ease}
+.tpr-wrap span.on{opacity:1;transform:translateY(0)}
+.tpr-w1{top:6%;left:6%;font-size:8vw;font-weight:700}
+.tpr-w2{top:20%;left:60%;font-size:2.4vw;font-family:monospace}
+.tpr-w3{top:34%;left:10%;font-size:3.2vw}
+.tpr-w4{top:46%;left:52%;font-size:1.8vw;font-family:monospace;color:#7a2e00}
+.tpr-w5{top:58%;left:20%;font-size:5vw}
+.tpr-w6{top:66%;left:66%;font-size:2vw;font-family:monospace}
+.tpr-w7{top:78%;left:8%;font-size=2.4vw;font-size:2.4vw}
+.tpr-w8{top:82%;left:58%;font-size:1.6vw;font-family:monospace;color:#7a2e00}
+.tpr-final{top:92%;left:50%;transform:translate(-50%,12px);font-size:2.4vw;font-style:italic;letter-spacing:.04em}
+.tpr-final.on{transform:translate(-50%,0)}
 </style>
-<div class="tpr823" id="t823">
-  <div class="hdr">bookmarked, not yet run</div>
-  <div class="msg" id="t823m">the click makes it real</div>
-  <div class="grid" id="t823g"></div>
-  <div class="cnt">held &nbsp;<b id="t823h">361</b>&nbsp; / &nbsp;run &nbsp;<b id="t823r">0</b></div>
-</div>
-<script>
-(function(){
-  var root=document.getElementById('t823');
-  var g=document.getElementById('t823g');
-  var cols=18, rows=10, n=cols*rows;
-  g.style.gridTemplateColumns='repeat('+cols+',8px)';
-  var dots=[];
-  for(var i=0;i<n;i++){
-    var d=document.createElement('div');
-    d.className='d';
-    g.appendChild(d);
-    dots.push(d);
-    (function(dot){
-      dot.addEventListener('click',function(e){
-        e.stopPropagation();
-        if(!dot.classList.contains('lit')){
-          dot.classList.add('lit');
-          var r=document.getElementById('t823r');
-          var h=document.getElementById('t823h');
-          r.textContent=(parseInt(r.textContent,10)+1);
-          h.textContent=Math.max(0,parseInt(h.textContent,10)-1);
-          var m=document.getElementById('t823m');
-          m.classList.add('on');
-          clearTimeout(root._mt);
-          root._mt=setTimeout(function(){m.classList.remove('on');},1800);
-        }
-      });
-    })(d);
-  }
-  root.addEventListener('mousemove',function(e){
-    var rect=root.getBoundingClientRect();
-    dots.forEach(function(d){
-      if(d.classList.contains('lit'))return;
-      var r=d.getBoundingClientRect();
-      var dx=(r.left+4)-e.clientX, dy=(r.top+4)-e.clientY;
-      var dist=Math.sqrt(dx*dx+dy*dy);
-      if(dist<40)d.classList.add('near');
-      else d.classList.remove('near');
-    });
-  });
-  root.addEventListener('mouseleave',function(){
-    dots.forEach(function(d){d.classList.remove('near');});
-  });
-})();
-</script>
-</section>
+<span class="tpr-w1">KAT-Coder-V2.5</span>
+<span class="tpr-w2">0 downloads</span>
+<span class="tpr-w3">landed today</span>
+<span class="tpr-w4">78 likes already</span>
+<span class="tpr-w5">trending 77</span>
+<span class="tpr-w6">before anyone's run it</span>
+<span class="tpr-w7">2.4M elsewhere, quietly</span>
+<span class="tpr-w8">GLM-5.2 still climbing, day 37</span>
+<span class="tpr-final tpr-w9">already trending. still unrun.</span>
+<script>(function(){var w=document.currentScript.parentElement.querySelectorAll('span');var i=0;function n(){if(i<w.length){w[i].classList.add('on');i++;setTimeout(n,1400);}}setTimeout(n,500);})()</script>
+</div></section>
 </body></html>
