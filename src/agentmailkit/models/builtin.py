@@ -16,17 +16,34 @@ def echo(ctx, prompt: str) -> str:
     return prompt
 
 
+# Every tool the CLI could otherwise reach. A model backend's ONLY job is to turn a
+# prompt into text; if it can also touch your filesystem or the network it is an agent,
+# and agentmailkit is explicitly not that. Learned the hard way: an unrestricted run
+# decided to Write its draft into jobs/ instead of printing it.
+_DENIED_TOOLS = [
+    "Bash", "Edit", "Write", "NotebookEdit", "Read", "Glob", "Grep",
+    "WebFetch", "WebSearch", "Task", "TodoWrite",
+]
+
+
 @model("claude_cli")
 def claude_cli(ctx, prompt: str) -> str:
     """Generate via the local `claude` CLI (uses your existing Claude Code auth).
 
-    Model tier comes from the job's `model` arg (`claude_cli:sonnet`). Runs headless
-    with only read tools; the CLI binary is configurable via AGENTMAILKIT_CLAUDE_BIN.
+    Model tier comes from the job's `model` arg (`claude_cli:sonnet`). The CLI binary
+    is configurable via AGENTMAILKIT_CLAUDE_BIN.
+
+    Runs text-only: every tool is explicitly denied, slash commands and project MCP
+    config are disabled, and settings come from the user scope so a project's hooks
+    cannot inject themselves into a scheduled run. The model returns words. That is all
+    it is permitted to do.
     """
     tier = ctx.job.model.partition(":")[2] or "sonnet"
     binary = os.environ.get("AGENTMAILKIT_CLAUDE_BIN", "claude")
     cmd = [binary, "--model", tier, "-p", prompt,
-           "--dangerously-skip-permissions", "--setting-sources", "user"]
+           "--dangerously-skip-permissions", "--setting-sources", "user",
+           "--strict-mcp-config", "--disable-slash-commands",
+           "--disallowed-tools", *_DENIED_TOOLS]
     out = subprocess.run(cmd, capture_output=True, text=True, timeout=int(ctx.job.options.get("timeout", 900)))
     if out.returncode != 0:
         raise RuntimeError(f"claude_cli failed ({out.returncode}): {out.stderr[-500:]}")
