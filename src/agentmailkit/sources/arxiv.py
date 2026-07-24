@@ -29,17 +29,41 @@ DEFAULT_COUNT = 8
 MAX_COUNT = 25
 
 
+# arXiv's own query field prefixes. If the user writes any of them, we pass the query
+# through verbatim rather than second-guessing it. No curated category list to outgrow.
+_FIELDS = ("cat:", "all:", "ti:", "au:", "abs:", "co:", "jr:", "rn:", "id:")
+
+
 def _parse_arg(arg: str):
-    """'cs.AI' | 'cs.AI:5' | 'q=some terms:5'  ->  (search_query, count)."""
+    """Accept anything arXiv accepts.
+
+        cs.AI                       bare category, the common case
+        cs.LG:5                     category + count
+        q=diffusion policy:5        free-text search + count
+        cat:cs.AI AND abs:agent#8   raw arXiv query syntax + count
+        au:Hinton#5                 any field prefix works
+
+    Returns (search_query, count). '#N' is the unambiguous count separator; a trailing
+    ':N' is still honoured for the simple category case.
+    """
     raw = (arg or "cs.AI").strip()
     count = DEFAULT_COUNT
-    # A trailing ':<digits>' is the count; anything else belongs to the query.
-    head, sep, tail = raw.rpartition(":")
-    if sep and tail.isdigit():
-        raw, count = head, max(1, min(int(tail), MAX_COUNT))
-    if raw.lower().startswith("q="):
+
+    # '#N' wins: unambiguous even when the query itself is full of colons.
+    head, sep, tail = raw.rpartition("#")
+    if sep and tail.strip().isdigit():
+        raw, count = head.strip(), max(1, min(int(tail.strip()), MAX_COUNT))
+    else:
+        head, sep, tail = raw.rpartition(":")
+        if sep and tail.isdigit():
+            raw, count = head.strip(), max(1, min(int(tail), MAX_COUNT))
+
+    low = raw.lower()
+    if low.startswith("q="):
         return f"all:{raw[2:].strip()}", count
-    return f"cat:{raw.strip()}", count
+    if any(f in low for f in _FIELDS) or " and " in low or " or " in low:
+        return raw, count                      # raw arXiv syntax, verbatim
+    return f"cat:{raw}", count                 # bare category shorthand
 
 
 def _clean(text, limit=200):

@@ -122,10 +122,45 @@ def _fresh(kind, want, exclude):
     return [r for _, r in keep[:want]]
 
 
+def _generic(spec: str) -> str:
+    """Any Hub slice you care about, expressed as the Hub's own query string.
+
+        models?author=meta-llama&limit=5
+        models?filter=text-to-video&sort=downloads&direction=-1&limit=8
+        datasets?search=clinical&sort=likes&limit=10
+        models?search=gguf&sort=lastModified&limit=6
+
+    Whatever the Hub API accepts, this accepts. No curated category list to outgrow.
+    """
+    kind, _, qs = spec.partition("?")
+    kind = (kind.strip() or "models").lower()
+    if kind not in ("models", "datasets"):
+        return f"(hf: unknown collection {kind!r}; use 'models' or 'datasets')"
+    params = qs.strip()
+    if "limit=" not in params:
+        params += ("&" if params else "") + "limit=8"
+    if "sort=" not in params:
+        params += "&sort=trendingScore&direction=-1"
+    rows = _fetch(f"{kind}?{params}")
+    if not rows:
+        return f"(no Hugging Face results for {spec})"
+    fmt = _model_line if kind == "models" else _dataset_line
+    head = (f"## HUGGING FACE - {kind} ({params}) "
+            f"(live from the Hub API; these numbers are real, cite them verbatim)\n")
+    return head + "\n".join(fmt(r) for r in rows) + "\n"
+
+
 @source("hf")
 def hf_source(ctx, arg: str) -> str:
-    """arg = full | pulse | brief (default full)."""
-    mode = (arg or "full").strip().lower()
+    """arg = a preset (full | pulse | brief) OR any Hub query string.
+
+    Presets are convenience, not a ceiling: pass 'models?...' or 'datasets?...' to
+    target exactly the slice of the Hub you care about.
+    """
+    mode = (arg or "full").strip()
+    if mode.lower().startswith(("models", "datasets")):
+        return _generic(mode)
+    mode = mode.lower()
     header = "(live from the Hugging Face Hub API; these numbers are real, cite them verbatim)"
 
     if mode == "brief":
