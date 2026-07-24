@@ -189,6 +189,7 @@ Before changing any core behaviour, run the test suite. It is offline and determ
 
 ```bash
 pip install -e ".[dev]"
+ruff check src
 pytest -q
 ```
 
@@ -197,6 +198,10 @@ run delivers a file and only a file, every gate rejects what it should, the dedu
 collapses arxiv versions and filters seen items, the quickstart gallery can structurally
 never send, and the Taper interaction check accepts real listeners while rejecting
 timer-only pieces. Anything that must hold every run belongs in a test here, not in a prompt.
+
+`ruff check src` is the other half of the gate (`[tool.ruff]` in `pyproject.toml`): pyflakes
++ pycodestyle errors + import sorting only. Deliberately not pyupgrade/bandit/blind-except/
+refurb - see the comment above `select` in `pyproject.toml` for why each is excluded.
 
 ## Reference
 

@@ -7,10 +7,9 @@ cannot replicate: it reads your machine directly. All paths resolve against
 """
 from __future__ import annotations
 
-import glob as _glob
-import os
 import subprocess
 from pathlib import Path
+
 from ..plugins import source
 
 

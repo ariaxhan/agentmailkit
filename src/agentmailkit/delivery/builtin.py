@@ -10,6 +10,7 @@ import os
 import smtplib
 from email.mime.text import MIMEText
 from pathlib import Path
+
 from ..plugins import delivery
 
 
@@ -58,6 +59,7 @@ def via_gmail(ctx, subject, body, to) -> dict:
     import base64
     import pickle
     from email.mime.text import MIMEText as _M
+
     from google.auth.transport.requests import Request
     from googleapiclient.discovery import build
 

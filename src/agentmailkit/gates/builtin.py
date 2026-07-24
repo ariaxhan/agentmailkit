@@ -5,7 +5,7 @@ digest from ever reaching the inbox. Reference in a job as `"min_length:400"`.
 """
 from __future__ import annotations
 
-from ..plugins import gate, GateFailure
+from ..plugins import GateFailure, gate
 
 
 @gate("nonempty")

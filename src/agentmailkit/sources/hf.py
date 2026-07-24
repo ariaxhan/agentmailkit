@@ -16,8 +16,8 @@ of raising, so a flaky Hub API can never break a scheduled run.
 from __future__ import annotations
 
 import json
-import urllib.request
 import urllib.error
+import urllib.request
 from datetime import datetime, timezone
 
 from ..plugins import source

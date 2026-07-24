@@ -47,3 +47,16 @@ packages = ["src/agentmailkit"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
+
+[tool.ruff]
+target-version = "py39"
+line-length = 100
+
+[tool.ruff.lint]
+# Sane baseline, not maximal pedantry: pyflakes (F) + pycodestyle errors (E4/E7/E9)
+# + import sorting (I). Deliberately NOT enabled: pyupgrade (UP) - repo supports
+# py3.9 and mixes old/new typing styles on purpose; flake8-bandit (S) /
+# flake8-blind-except (BLE) - the scheduler/runner intentionally catches broad
+# exceptions per-job so one bad source/model never kills the whole run; refurb
+# (FURB) - re.I/re.S aliases are the existing house style throughout themes/.
+select = ["E4", "E7", "E9", "F", "I"]

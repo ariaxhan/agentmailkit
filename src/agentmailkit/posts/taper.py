@@ -27,7 +27,8 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from ..plugins import post, get as _get_plugin
+from ..plugins import get as _get_plugin
+from ..plugins import post
 
 # The spirit, not a checklist. Kept in the code so a user gets good pieces with
 # zero configuration, and can override it entirely via options.taper.prompt.

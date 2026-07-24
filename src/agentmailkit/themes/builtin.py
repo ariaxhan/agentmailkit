@@ -191,7 +191,8 @@ def _markdown_to_blocks(text: str, p: dict):
             bullets.clear()
 
     def close_card():
-        flush_para(); flush_bullets()
+        flush_para()
+        flush_bullets()
         if title or body:
             head = (f'<h2 style="margin:0 0 12px 0;font-size:13px;font-weight:700;'
                     f'text-transform:uppercase;letter-spacing:.6px;color:{p["ink"]};">'
@@ -210,11 +211,13 @@ def _markdown_to_blocks(text: str, p: dict):
         stripped = line.strip()
 
         if stripped.lower().startswith("@stats:"):
-            flush_para(); flush_bullets()
+            flush_para()
+            flush_bullets()
             tiles = _stat_tiles(stripped.split(":", 1)[1], p)
             continue
         if not stripped:
-            flush_para(); flush_bullets()
+            flush_para()
+            flush_bullets()
             continue
         if stripped.startswith("## "):
             close_card()
@@ -223,16 +226,19 @@ def _markdown_to_blocks(text: str, p: dict):
         if stripped.startswith("# "):
             continue                                   # page title comes from the subject
         if stripped.startswith("### "):
-            flush_para(); flush_bullets()
+            flush_para()
+            flush_bullets()
             body.append(f'<h3 style="margin:14px 0 6px 0;font-size:13px;font-weight:700;'
                         f'color:{p["ink"]};">{_inline(stripped[4:], p)}</h3>')
             continue
         if stripped in ("---", "***", "___"):
-            flush_para(); flush_bullets()
+            flush_para()
+            flush_bullets()
             body.append(f'<hr style="border:0;border-top:1px solid {p["rule"]};margin:14px 0;">')
             continue
         if stripped.startswith("> "):
-            flush_para(); flush_bullets()
+            flush_para()
+            flush_bullets()
             body.append(f'<blockquote style="margin:10px 0;padding:2px 0 2px 14px;'
                         f'border-left:3px solid {p["accent"]};color:{p["ink"]};font-size:14px;'
                         f'line-height:1.55;font-style:italic;">{_inline(stripped[2:], p)}</blockquote>')

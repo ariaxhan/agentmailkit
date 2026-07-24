@@ -13,9 +13,10 @@ import json
 import sys
 from pathlib import Path
 
-from . import __version__, config as _config, plugins
-from .spec import load_jobs
+from . import __version__, plugins
+from . import config as _config
 from .runner import run as run_job
+from .spec import load_jobs
 
 
 def _jobs(cfg):

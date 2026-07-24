@@ -65,10 +65,10 @@ def load_builtins() -> None:
     global _LOADED
     if _LOADED:
         return
-    from .models import builtin as _m       # noqa: F401
-    from .sources import builtin as _s      # noqa: F401
-    from .delivery import builtin as _d     # noqa: F401
-    from .gates import builtin as _g        # noqa: F401
+    from .delivery import builtin as _d  # noqa: F401
+    from .gates import builtin as _g  # noqa: F401
+    from .models import builtin as _m  # noqa: F401
+    from .sources import builtin as _s  # noqa: F401
     # Optional/incremental built-ins: present -> registered, absent -> skipped.
     # This is the same drop-in contract third-party plugins use, applied to our own.
     for mod in ("sources.hf", "sources.arxiv", "sources.rss", "sources.history",
