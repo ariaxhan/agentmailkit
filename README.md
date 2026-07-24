@@ -109,6 +109,8 @@ The single most common failure of an LLM research digest is inventing a plausibl
 
 `taper` is an optional post plugin. After the email is safely sent, it generates a tiny self-contained interactive HTML artifact responding to the same material: one file, no external assets, meaning carried by form and algorithm instead of prose. Where the digest says what happened, the piece is an abstract reply to it.
 
+The Taper form comes from **[taper.badquar.to](https://taper.badquar.to)**, a journal of tiny computational literature where every piece must fit in a couple of kilobytes. All credit for the form belongs there; this plugin only generates pieces in its spirit.
+
 ```json
 "post": ["taper"],
 "options": { "taper": { "out_dir": "pieces", "max_bytes": 4096 } }
@@ -171,16 +173,31 @@ pip install agentmailkit[all]          # + every model and delivery backend
 
 The core has **zero required dependencies**. Backends pull their own libraries only when enabled.
 
+## See it
+
+**[Live sample gallery](https://ariaxhan.github.io/agentmailkit/)** - real emails, real APIs, real model output, rendered by the theme. Nothing hand-touched.
+
 ## Try it now
 
-The `jobs/` directory ships as a working example set that runs with no API key and sends nothing:
+The `jobs/` directory ships as a working library that runs with no API key and sends nothing. It is deliberately varied, because the range of things you can put in an email is the point:
+
+| Job | What it pulls | Why it is interesting |
+|---|---|---|
+| `morning-brief` | weather + three news outlets + on-this-day | Outlets stay labelled so the model can contrast their framing |
+| `curiosity` | archaeology + astronomy feeds + history | No work content at all, on purpose |
+| `research-digest` | Hugging Face + arXiv | Real ids, counts and paper links the model cannot invent |
+| `repo-pulse` | your git log, diffstat, TODO markers | Reads your actual working tree, which no cloud scheduler can |
+| `daily-brief` | local files + git log | The minimal shape to copy |
 
 ```bash
-agentmailkit run daily-brief --dry-run       # reads local files + git log
-agentmailkit run research-digest --dry-run   # hits the live HF + arXiv APIs
+agentmailkit list
+agentmailkit run morning-brief --dry-run
+agentmailkit run curiosity --dry-run
 ```
 
-`examples/` has the same jobs wired for real use: a real model, Gmail or SMTP delivery, and a taper piece.
+Then make it yours: point a source at your own data, rewrite the prompt, set a schedule. `examples/` has the same jobs wired for real use with a real model, Gmail or SMTP delivery, and a taper piece.
+
+**Ideas worth stealing:** a feed of your city's council agendas, your bank's exchange-rate API, security advisories for your exact dependency list, a friend's blog, court filings, release notes for the tools you use, tide tables, the ISS pass times over your house. If it has a feed or an API, it can be in your inbox at 7am.
 
 ## Status
 

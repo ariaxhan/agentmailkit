@@ -1,0 +1,17 @@
+{
+  "id": "repo-pulse",
+  "schedule": "0 18 * * 5",
+  "prompt": "repo-pulse.md",
+  "model": "echo",
+  "sources": [
+    "commits=shell:git log --oneline --no-merges --since='7 days ago' | head -40",
+    "churn=shell:git diff --stat @{7.days.ago} 2>/dev/null | tail -20",
+    "contributors=shell:git shortlog -sn --since='7 days ago' | head -10",
+    "todos=shell:grep -rn 'TODO\\|FIXME' --include='*.py' . | head -15"
+  ],
+  "gates": ["nonempty"],
+  "render": "slate",
+  "delivery": "stdout",
+  "subject": "Repo pulse - week to {date}",
+  "status": "active"
+}

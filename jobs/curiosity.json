@@ -1,0 +1,17 @@
+{
+  "id": "curiosity",
+  "schedule": "0 9 * * 6",
+  "prompt": "curiosity.md",
+  "model": "echo",
+  "sources": [
+    "digs=rss:https://www.archaeology.org/feed|https://www.sciencedaily.com/rss/fossils_ruins/archaeology.xml#5",
+    "space=rss:https://www.sciencedaily.com/rss/space_time/astronomy.xml#4",
+    "history=history:selected#3"
+  ],
+  "gates": ["nonempty", "min_length:200"],
+  "render": "ink",
+  "delivery": "stdout",
+  "subject": "Curiosity - {date}",
+  "dedup": { "window_days": 60 },
+  "status": "active"
+}

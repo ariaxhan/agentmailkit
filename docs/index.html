@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>agentmailkit - sample emails</title>
+<style>
+  :root { color-scheme: light dark; }
+  body {
+    margin: 0; padding: 48px 20px 64px;
+    background: #fafaf8; color: #2a2a2a;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.55;
+  }
+  .wrap { max-width: 760px; margin: 0 auto; }
+  .rule { height: 3px; background: linear-gradient(90deg,#d4a574,#e8c9a0); border-radius: 2px; margin-bottom: 26px; }
+  h1 { font-size: 26px; margin: 0 0 6px; letter-spacing: -.4px; }
+  .sub { color: #7a7a7a; font-size: 15px; margin: 0 0 32px; }
+  a { color: inherit; }
+  .card {
+    background: #fff; border-radius: 10px; padding: 20px 22px; margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,.08); border-left: 3px solid #d4a574;
+    display: block; text-decoration: none;
+  }
+  .card h2 { margin: 0 0 6px; font-size: 16px; }
+  .card p { margin: 0; font-size: 14px; color: #6a6a6a; }
+  .meta { font-family: 'SF Mono','Fira Code',ui-monospace,monospace; font-size: 11px;
+          color: #999; text-transform: uppercase; letter-spacing: .8px; margin-top: 10px; }
+  .note { font-size: 13px; color: #7a7a7a; margin-top: 30px; }
+  code { font-family: 'SF Mono','Fira Code',ui-monospace,monospace; font-size: 12px;
+         background: rgba(0,0,0,.05); padding: 1px 5px; border-radius: 4px; }
+  @media (prefers-color-scheme: dark) {
+    body { background: #14161a; color: #e8e6e1; }
+    .card { background: #1c1f26; box-shadow: none; }
+    .card p, .sub, .note { color: #8a8f98; }
+    code { background: rgba(255,255,255,.08); }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="rule"></div>
+  <h1>agentmailkit sample emails</h1>
+  <p class="sub">
+    Real output. Live APIs, a real model, and the deterministic renderer that owns every
+    byte of markup. Nothing here was hand-written or touched up.
+  </p>
+
+  <a class="card" href="samples/morning-brief.html">
+    <h2>Morning Brief</h2>
+    <p>
+      Open-Meteo weather, three news outlets kept separate so their framings can be
+      compared, and Wikipedia's on-this-day. Note the paragraph contrasting how two
+      outlets covered the same story: that comparison only exists because the feeds
+      stay labelled all the way into the prompt.
+    </p>
+    <div class="meta">warm theme &middot; weather + news + history</div>
+  </a>
+
+  <a class="card" href="samples/curiosity.html">
+    <h2>Curiosity</h2>
+    <p>
+      Archaeology and astronomy feeds plus a historical entry. No work content and no
+      productivity framing, on purpose: an inbox that only ever contains work stops
+      getting opened.
+    </p>
+    <div class="meta">ink theme &middot; rss + history</div>
+  </a>
+
+  <p class="note">
+    Every email is one JSON job spec plus a markdown prompt. The model writes only the
+    words; the theme produces the HTML, so the layout is byte-identical every run and
+    house style (no em dashes) is enforced in code rather than requested from a model.
+    Run them yourself with <code>agentmailkit run morning-brief --dry-run</code>.
+  </p>
+  <p class="note">
+    <a href="https://github.com/ariaxhan/agentmailkit">Source on GitHub</a>
+  </p>
+</div>
+</body>
+</html>

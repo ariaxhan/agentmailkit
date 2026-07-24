@@ -1,0 +1,17 @@
+{
+  "id": "morning-brief",
+  "schedule": "0 7 * * *",
+  "prompt": "morning-brief.md",
+  "model": "echo",
+  "sources": [
+    "weather=weather:Brooklyn#2",
+    "world=news:BBC=https://feeds.bbci.co.uk/news/world/rss.xml|Al Jazeera=https://www.aljazeera.com/xml/rss/all.xml|NPR=https://feeds.npr.org/1004/rss.xml#4",
+    "history=history:events#3"
+  ],
+  "gates": ["nonempty", "min_length:200"],
+  "render": "warm",
+  "delivery": "stdout",
+  "subject": "Morning Brief - {date}",
+  "dedup": { "window_days": 14 },
+  "status": "active"
+}

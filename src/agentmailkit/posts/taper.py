@@ -1,9 +1,13 @@
 """Taper - computational poetry as an optional companion to a digest.
 
-A taper piece is a tiny self-contained interactive HTML artifact: one file, no
-external assets, meaning carried by form and algorithm rather than prose. Where the
-email says what happened, the taper piece is an abstract response to it. Same run,
-same material, a second and stranger output.
+The Taper form originates with https://taper.badquar.to, a journal of tiny
+computational literature where each piece must fit in a couple of kilobytes. The
+constraint is the medium: one file, no external assets, meaning carried by form and
+algorithm rather than prose. All credit for the form belongs there; this plugin only
+generates pieces in its spirit.
+
+Where the email says what happened, the taper piece is an abstract response to it.
+Same run, same material, a second and stranger output.
 
 This is deliberately a POST plugin, not a delivery backend: it runs only after the
 email is safely sent, and it fails open. A weird generative piece must never be the
