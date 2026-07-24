@@ -45,7 +45,7 @@ def cmd_run(args, cfg):
 
 def cmd_plugins(args, cfg):
     plugins.load_builtins()
-    for kind in ("source", "model", "gate", "delivery", "post"):
+    for kind in ("source", "model", "gate", "delivery", "render", "post"):
         print(f"{kind:9s}: {', '.join(plugins.registered(kind)) or '(none)'}")
     return 0
 

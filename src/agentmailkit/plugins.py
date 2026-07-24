@@ -71,7 +71,7 @@ def load_builtins() -> None:
     from .gates import builtin as _g        # noqa: F401
     # Optional/incremental built-ins: present -> registered, absent -> skipped.
     # This is the same drop-in contract third-party plugins use, applied to our own.
-    for mod in ("sources.hf", "sources.arxiv", "themes.builtin"):
+    for mod in ("sources.hf", "sources.arxiv", "posts.taper", "themes.builtin"):
         try:
             __import__(f"{__package__}.{mod}")
         except ImportError:

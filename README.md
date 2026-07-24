@@ -86,13 +86,35 @@ Everything type-specific is a named plugin resolved from the job spec.
 
 | Kind | Built in | Contract |
 |---|---|---|
-| **source** | `file`, `glob`, `recent`, `shell` | `fn(ctx, arg) -> str` |
+| **source** | `file`, `glob`, `recent`, `shell`, `hf`, `arxiv` | `fn(ctx, arg) -> str` |
 | **model** | `echo`, `claude_cli`, `anthropic`, `openai` | `fn(ctx, prompt) -> str` |
 | **gate** | `nonempty`, `min_length`, `no_placeholder` | `fn(ctx, body)`, raise to reject |
 | **delivery** | `stdout`, `file`, `smtp`, `gmail` | `fn(ctx, subject, body, to) -> dict` |
+| **post** | `taper` | `fn(ctx, body)`, runs after a successful send |
 | **scheduler** | `launchd`, `cron`, `systemd`, `github`, `cloudflare` | emits host config |
 
 `shell` is the escape hatch: any local command's output becomes prompt context, so you are never blocked waiting for a plugin to exist.
+
+### Research sources are deterministic on purpose
+
+The single most common failure of an LLM research digest is inventing a plausible paper title or a confident download count. `hf` and `arxiv` remove the opportunity: they query the Hugging Face Hub and arXiv APIs directly and hand the model **real** ids, figures, authors and links to cite verbatim. No model sits between the API and the fact.
+
+```json
+"sources": ["models=hf:full", "papers=arxiv:cs.AI:6", "learning=arxiv:q=retrieval augmented generation:5"]
+```
+
+`hf` takes `full`, `pulse` or `brief`. `arxiv` takes a category (`cs.AI`), an optional count (`cs.LG:5`), or a free-text search (`q=your terms:5`). Both fail open: if an API is down you get a short notice, never a broken run.
+
+### Taper: computational poetry as a companion piece
+
+`taper` is an optional post plugin. After the email is safely sent, it generates a tiny self-contained interactive HTML artifact responding to the same material: one file, no external assets, meaning carried by form and algorithm instead of prose. Where the digest says what happened, the piece is an abstract reply to it.
+
+```json
+"post": ["taper"],
+"options": { "taper": { "out_dir": "pieces", "max_bytes": 4096 } }
+```
+
+It runs only after delivery and fails open by design. A strange generative artifact must never be the reason a digest does not arrive.
 
 **Writing your own** takes one decorator:
 
@@ -149,16 +171,26 @@ pip install agentmailkit[all]          # + every model and delivery backend
 
 The core has **zero required dependencies**. Backends pull their own libraries only when enabled.
 
+## Try it now
+
+The `jobs/` directory ships as a working example set that runs with no API key and sends nothing:
+
+```bash
+agentmailkit run daily-brief --dry-run       # reads local files + git log
+agentmailkit run research-digest --dry-run   # hits the live HF + arXiv APIs
+```
+
+`examples/` has the same jobs wired for real use: a real model, Gmail or SMTP delivery, and a taper piece.
+
 ## Status
 
-Alpha (0.1.0). The engine, plugin system, and dry-run are working and tested end to end.
+Alpha (0.1.0). The engine, plugin system, sources, gates, delivery backends, scheduler emitters and dry-run all work and are exercised end to end.
 
 **Roadmap**, in order:
 
-- A deterministic HTML theme so digests are beautifully formatted without asking the model to write markup
-- `hf` and `arxiv` sources for research digests that carry real, citable numbers
-- Deduplication and a seen-ledger so a daily digest never repeats itself
-- `agentmailkit quickstart` to generate a working sample email set from your real data on first run
+- A deterministic HTML theme, so digests are beautifully formatted without ever asking the model to write markup
+- Deduplication and a seen-ledger, so a daily digest never repeats itself
+- `agentmailkit quickstart`, to generate a working sample email set from your real data on first run
 - An agent-facing setup guide, so a coding agent can install and extend this without a human
 
 ## Contributing

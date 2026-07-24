@@ -1,0 +1,13 @@
+{
+  "root": ".",
+  "jobs_dir": "jobs",
+  "out_dir": "out",
+  "default_to": "you@example.com",
+  "sender": "you@example.com",
+  "default_model": "claude_cli:sonnet",
+  "extra": {
+    "gmail": {
+      "token": "~/.config/agentmailkit/gmail_token.pickle"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "id": "production-digest",
+  "schedule": "0 15 * * 1-5",
+  "prompt": "research-digest.md",
+  "model": "claude_cli:sonnet",
+  "sources": [
+    "models=hf:full",
+    "papers=arxiv:cs.AI:6",
+    "learning=arxiv:cs.LG:4",
+    "notes=recent:~/notes:3",
+    "commits=shell:git log --oneline --since='24 hours ago'"
+  ],
+  "gates": ["nonempty", "min_length:600", "no_placeholder"],
+  "delivery": "gmail",
+  "to": "you@example.com",
+  "subject": "Research digest - {date}",
+  "post": ["taper"],
+  "options": {
+    "taper": {
+      "out_dir": "pieces",
+      "max_bytes": 4096
+    }
+  },
+  "status": "active"
+}

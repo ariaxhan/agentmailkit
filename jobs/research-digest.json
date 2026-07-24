@@ -1,0 +1,16 @@
+{
+  "id": "research-digest",
+  "schedule": "0 15 * * 1-5",
+  "prompt": "research-digest.md",
+  "model": "echo",
+  "sources": [
+    "models=hf:full",
+    "papers=arxiv:cs.AI:6",
+    "learning=arxiv:cs.LG:4"
+  ],
+  "gates": ["nonempty", "min_length:200"],
+  "delivery": "stdout",
+  "subject": "Research digest - {date}",
+  "post": [],
+  "status": "active"
+}
