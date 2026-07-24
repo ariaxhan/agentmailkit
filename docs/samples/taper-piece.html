@@ -2,66 +2,78 @@
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Taper piece - agentmailkit sample</title>
-<style>html,body{margin:0;padding:0;background:#000;}
-.back{position:fixed;top:12px;left:14px;z-index:99;font:13px -apple-system,sans-serif;color:#888;text-decoration:none}</style>
-</head><body>
+<style>
+  html,body{margin:0;padding:0;height:100%;background:#000;overflow-x:hidden}
+  body{display:flex;flex-direction:column;min-height:100vh}
+  section{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;min-height:100vh}
+  section>*:not(style):not(script){flex:1 1 auto}
+  .back{position:fixed;top:12px;left:14px;z-index:99;
+        font:13px -apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+        color:#888;text-decoration:none;mix-blend-mode:difference}
+</style></head><body>
 <a class="back" href="../index.html">&larr; all samples</a>
 <section data-date='2026-07-23' data-type='research-digest'>
 <style>
-.tp23-wrap{--mx:50%;--my:50%;background:#050807 radial-gradient(circle at var(--mx) var(--my),rgba(60,255,170,.16),transparent 42%);color:#3fffa8;font-family:ui-monospace,'SF Mono','Courier New',monospace;padding:2.4em 1.4em;border-radius:6px;overflow:hidden;box-sizing:border-box}
-.tp23-grid{display:grid;grid-template-columns:repeat(13,1.5em);gap:.15em;justify-content:center;user-select:none;cursor:crosshair}
-.tp23-grid span{display:block;text-align:center;line-height:1.5em;font-size:.95em;color:#1c4a34;transition:color .15s,text-shadow .2s}
-.tp23-grid span.lockT{color:#8dffce;text-shadow:0 0 6px #3fffa8}
-.tp23-grid span.lockN{color:#2c6b4c}
-.tp23-note{margin-top:1.6em;font-size:.72em;letter-spacing:.06em;color:#2c6b4c;text-align:center;opacity:.8}
-.tp23-note b{color:#5ee6ac}
+.tpr823{min-height:100vh;background:#0a0a0c;color:#e8e4da;font-family:'Courier New',monospace;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;overflow:hidden;cursor:crosshair;}
+.tpr823 .hdr{position:absolute;top:6vh;left:0;right:0;text-align:center;letter-spacing:.5em;font-size:11px;color:#5a5850;text-transform:uppercase;}
+.tpr823 .cnt{position:absolute;bottom:6vh;left:0;right:0;text-align:center;font-size:11px;color:#5a5850;letter-spacing:.15em;}
+.tpr823 .cnt b{color:#e8e4da;font-weight:normal;}
+.tpr823 .grid{display:grid;gap:14px;}
+.tpr823 .d{width:8px;height:8px;border-radius:50%;background:#232226;transition:background .6s ease,transform .6s ease,box-shadow .6s ease;}
+.tpr823 .d.near{background:#3a3830;transform:scale(1.3);}
+.tpr823 .d.lit{background:#e8c76a;box-shadow:0 0 10px 2px rgba(232,199,106,.5);transform:scale(1.6);}
+.tpr823 .msg{position:absolute;font-size:10px;color:#8a8578;letter-spacing:.3em;top:12vh;opacity:0;transition:opacity 1.2s ease;text-align:center;left:0;right:0;}
+.tpr823 .msg.on{opacity:1;}
 </style>
-<div class="tp23-wrap" id="tp23w">
-<div class="tp23-grid" id="tp23g"></div>
-<div class="tp23-note">it has read this word <b id="tp23n">2,400,000</b> times and is still not sure</div>
+<div class="tpr823" id="t823">
+  <div class="hdr">bookmarked, not yet run</div>
+  <div class="msg" id="t823m">the click makes it real</div>
+  <div class="grid" id="t823g"></div>
+  <div class="cnt">held &nbsp;<b id="t823h">361</b>&nbsp; / &nbsp;run &nbsp;<b id="t823r">0</b></div>
 </div>
 <script>
 (function(){
-var host=document.getElementById('tp23w'),g=document.getElementById('tp23g'),ctr=document.getElementById('tp23n');
-var msg='STILL READING';
-var cols=msg.length,rows=5,mid=2;
-var pool='01#*+=~^%$@&:;.,ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-var cells=[];
-for(var r=0;r<rows;r++){for(var c=0;c<cols;c++){
-var s=document.createElement('span');
-s.textContent=pool[Math.floor(Math.random()*pool.length)];
-g.appendChild(s);
-cells.push({el:s,r:r,c:c,locked:false,target:(r===mid?msg[c]:null)});
-}}
-function rnd(){return pool[Math.floor(Math.random()*pool.length)]}
-setInterval(function(){
-for(var i=0;i<cells.length;i++){var k=cells[i];if(!k.locked)k.el.textContent=rnd();}
-},110);
-var count=2400000;
-setInterval(function(){count+=Math.floor(Math.random()*900)+40;ctr.textContent=count.toLocaleString();},600);
-function nearest(x,y){
-var rect=g.getBoundingClientRect();
-var cw=rect.width/cols,ch=rect.height/rows;
-var cc=Math.floor((x-rect.left)/cw),rr=Math.floor((y-rect.top)/ch);
-return {r:rr,c:cc};
-}
-host.addEventListener('mousemove',function(e){
-host.style.setProperty('--mx',(e.clientX-host.getBoundingClientRect().left)+'px');
-host.style.setProperty('--my',(e.clientY-host.getBoundingClientRect().top)+'px');
-var n=nearest(e.clientX,e.clientY);
-for(var i=0;i<cells.length;i++){
-var k=cells[i];
-var d=Math.hypot(k.r-n.r,k.c-n.c);
-if(d<=1.4 && !k.locked){
-k.locked=true;
-if(k.target){k.el.textContent=k.target===' '?'\u00A0':k.target;k.el.classList.add('lockT');}
-else{k.el.classList.add('lockN');}
-}
-}
-});
-host.addEventListener('mouseleave',function(){
-for(var i=0;i<cells.length;i++){var k=cells[i];k.locked=false;k.el.classList.remove('lockT','lockN');}
-});
+  var root=document.getElementById('t823');
+  var g=document.getElementById('t823g');
+  var cols=18, rows=10, n=cols*rows;
+  g.style.gridTemplateColumns='repeat('+cols+',8px)';
+  var dots=[];
+  for(var i=0;i<n;i++){
+    var d=document.createElement('div');
+    d.className='d';
+    g.appendChild(d);
+    dots.push(d);
+    (function(dot){
+      dot.addEventListener('click',function(e){
+        e.stopPropagation();
+        if(!dot.classList.contains('lit')){
+          dot.classList.add('lit');
+          var r=document.getElementById('t823r');
+          var h=document.getElementById('t823h');
+          r.textContent=(parseInt(r.textContent,10)+1);
+          h.textContent=Math.max(0,parseInt(h.textContent,10)-1);
+          var m=document.getElementById('t823m');
+          m.classList.add('on');
+          clearTimeout(root._mt);
+          root._mt=setTimeout(function(){m.classList.remove('on');},1800);
+        }
+      });
+    })(d);
+  }
+  root.addEventListener('mousemove',function(e){
+    var rect=root.getBoundingClientRect();
+    dots.forEach(function(d){
+      if(d.classList.contains('lit'))return;
+      var r=d.getBoundingClientRect();
+      var dx=(r.left+4)-e.clientX, dy=(r.top+4)-e.clientY;
+      var dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<40)d.classList.add('near');
+      else d.classList.remove('near');
+    });
+  });
+  root.addEventListener('mouseleave',function(){
+    dots.forEach(function(d){d.classList.remove('near');});
+  });
 })();
 </script>
 </section>

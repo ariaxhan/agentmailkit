@@ -48,8 +48,13 @@ HARD RULES:
 1. Output EXACTLY ONE <section> element and nothing else. No markdown fence, no commentary.
 2. The opening tag must be: <section data-date='{date}' data-type='{slug}'>
 3. Scope every CSS selector under a unique class so the piece cannot leak styles into a host page.
-4. Stay under {max_bytes} bytes total.
-5. No external requests of any kind.
+4. The piece must FILL THE VIEWPORT. Its outermost element inside the section needs
+   min-height:100vh (and its own background colour), so the piece occupies the whole
+   screen rather than collapsing to the height of its content. Centre the content
+   within that space. A piece that renders as a small strip at the top of a black page
+   is a failed piece.
+5. Stay under {max_bytes} bytes total.
+6. No external requests of any kind.
 
 THEMATIC SEED - today's material. Respond to its mood and shape. Do NOT restate it:
 ---

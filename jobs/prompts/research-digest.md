@@ -25,4 +25,10 @@ Write a clean HTML email:
 
 Rules: link every item. Use real figures from the material. Prefer specifics over
 adjectives. No hype, no filler, no "in today's fast-moving landscape". Under 500 words.
-Output HTML only (h2, p, ul, li, a, strong), no markdown fences.
+
+Write **markdown**, never HTML. A theme turns your markdown into the finished email, so
+any HTML tag you write is shown to the reader as literal text. Use `## Section`,
+`- item`, `**bold**` and `[text](url)`.
+
+Output the email only. No preamble and no commentary about your own process. The first
+character of your reply is the first character of the email.
