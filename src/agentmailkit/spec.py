@@ -23,10 +23,12 @@ class Job:
     schedule: str = ""                       # cron expression (scheduler-agnostic)
     sources: List[str] = field(default_factory=list)   # source-plugin refs, "name" or "name:arg"
     gates: List[str] = field(default_factory=list)     # gate-plugin refs
+    render: str = ""                         # theme ref; "" leaves the model output untouched
     delivery: str = "stdout"                 # delivery-backend ref
     subject: str = ""                        # may contain {date}/{day}/{id} placeholders
     to: str = ""                             # recipient; falls back to config.default_to
     post: List[str] = field(default_factory=list)      # post-hook refs (commit, learn, ...)
+    dedup: Any = None                        # True, or {window_days, path, record}
     options: Dict[str, Any] = field(default_factory=dict)  # free-form per-job knobs
     status: str = "active"
 

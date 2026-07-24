@@ -10,7 +10,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any, Dict
 
-from . import plugins
+from . import ledger, plugins
 from .spec import Context, Job
 
 
@@ -45,6 +45,22 @@ def run(job: Job, config: Any, dry_run: bool = False) -> Dict[str, Any]:
         ctx.blocks[key] = block or ""
         receipt["steps"].append({"source": ref, "alias": key, "chars": len(ctx.blocks[key])})
 
+    # 1b. dedup: strip items already delivered BEFORE the model ever sees them. Asking a
+    #     model to "not repeat yesterday" is unreliable, and summarizing items you intend
+    #     to discard is paid waste. See ledger.py for the full contract.
+    dd = ledger.resolve(job, config)
+    book = presented = None
+    if dd:
+        book = ledger.Ledger(dd["path"], dd["window_days"])
+        seen = book.seen(job.id)
+        presented, dropped = [], 0
+        for alias, blk in list(ctx.blocks.items()):
+            filtered, keys, n = ledger.filter_block(blk, seen)
+            ctx.blocks[alias] = filtered
+            presented += keys
+            dropped += n
+        receipt["dedup"] = {"seen_in_window": len(seen), "dropped": dropped, "fresh": len(presented)}
+
     # 2. render prompt
     prompt = _load_prompt(ctx)
     receipt["prompt_chars"] = len(prompt)
@@ -61,6 +77,13 @@ def run(job: Job, config: Any, dry_run: bool = False) -> Dict[str, Any]:
         plugins.get("gate", gname)(ctx, body)
         receipt["steps"].append({"gate": ref, "passed": True})
 
+    # 4b. render: the model wrote the words, the theme owns the markup. Deterministic
+    #     presentation is the whole point - same structure every run, only content moves.
+    if job.render:
+        rname, _ = plugins.split_ref(job.render)
+        body = plugins.get("render", rname)(ctx, body)
+        receipt["rendered"] = {"theme": job.render, "chars": len(body)}
+
     # 5. deliver
     subject = ctx.render(job.subject) or f"{job.id} - {ctx.date}"
     to = job.to or config.default_to
@@ -69,6 +92,11 @@ def run(job: Job, config: Any, dry_run: bool = False) -> Dict[str, Any]:
     else:
         result = plugins.get("delivery", job.delivery)(ctx, subject, body, to)
         receipt["delivery"] = {"backend": job.delivery, "to": to, "subject": subject, "sent": True, "result": result}
+        # Record ONLY after a confirmed send. A failed delivery must not burn a day of
+        # content by marking unseen items as seen.
+        if book is not None:
+            keys = ledger.keys_in(body) if dd["record"] == "delivered" else presented
+            receipt["dedup"]["recorded"] = book.record(job.id, keys, ctx.date)
 
     # 6. post-hooks (only after a real send)
     for ref in job.post:
