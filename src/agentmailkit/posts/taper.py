@@ -43,6 +43,8 @@ WHAT A TAPER PIECE ACTUALLY IS. Study these characteristics of the real form:
 - **It unfolds over time.** Pieces reveal themselves. Words arrive one at a time on a
   timer, lines vanish one by one in a shuffled order, a form animates frame by frame.
   A static composition that just sits there is not a Taper piece.
+- **The reader is part of it.** The piece answers to the hand: it responds to hover,
+  movement or click. Time alone is a film; a Taper piece is something you can touch.
 - **Committed palette.** Either a saturated LIGHT ground (warm sand, ochre, hot blue,
   acid yellow) with dark earth-toned text, or true black with pure white and one hot
   accent. Muddy grey text on near-black is the single most common failure. If you
@@ -68,6 +70,13 @@ HARD RULES:
 4. Your outermost element inside the section sets min-height:100vh and its own background.
 5. Stay under {max_bytes} bytes total.
 6. No external requests of any kind.
+7. INTERACTION IS MANDATORY. The piece must respond to the reader, not only to a timer.
+   Wire a real listener and make its effect obvious. Pick one and commit to it:
+     - mousemove: words follow, scatter, warm, sharpen or fall away near the cursor
+     - click or tap: plants a word, reveals the next line, breaks or repairs something
+     - hover on a word: exposes a hidden layer, a number, a second reading
+   It must feel like discovering a secret, and it must be discoverable without
+   instructions. A piece that ignores the mouse entirely has failed this rule.
 
 THEMATIC SEED - today's material. Mine it for a VOCABULARY: the proper nouns, numbers,
 verbs and odd specifics worth setting in type. Then build the piece from those words.
@@ -78,6 +87,20 @@ Respond to its mood; do NOT restate or summarise it:
 """
 
 SECTION_RE = re.compile(r"<section\b.*?</section>", re.S | re.I)
+
+# Interaction is a hard rule, so it is checked rather than hoped for. A piece that
+# ignores the mouse is a film, not a Taper piece; when that happens we ask once more.
+INTERACTION_RE = re.compile(
+    r"addEventListener\s*\(\s*['\"](?:click|mousemove|mouseover|mouseenter|pointer\w+|touch\w+)"
+    r"|on(?:click|mousemove|mouseover|mouseenter|pointerdown|touchstart)\s*="
+    r"|:hover",
+    re.I)
+
+
+def _generate(ctx, prompt, model_name):
+    raw = _get_plugin("model", model_name)(ctx, prompt) or ""
+    match = SECTION_RE.search(raw)
+    return match.group(0) if match else None
 
 
 @post("taper")
@@ -106,16 +129,26 @@ def taper(ctx, body: str) -> None:
     model_name = model_ref.partition(":")[0]
 
     try:
-        raw = _get_plugin("model", model_name)(ctx, prompt) or ""
+        piece = _generate(ctx, prompt, model_name)
+        if piece and not INTERACTION_RE.search(piece):
+            # Rule 7 is not optional. Ask once more before settling.
+            print("[taper] piece had no interaction hook, regenerating once")
+            retry = _generate(
+                ctx, prompt + "\n\nYour previous attempt had NO interaction. Wire a real "
+                              "mousemove, click or hover listener with an obvious effect.",
+                model_name)
+            if retry and INTERACTION_RE.search(retry):
+                piece = retry
+            elif retry:
+                piece = retry
+                print("[taper] still no interaction hook; writing anyway")
     except Exception as e:                          # fail open: the email already shipped
         print(f"[taper] generation failed, skipping piece: {e}")
         return
 
-    match = SECTION_RE.search(raw)
-    if not match:
+    if not piece:
         print("[taper] model did not return a <section> element, skipping piece")
         return
-    piece = match.group(0)
 
     if len(piece.encode("utf-8")) > max_bytes:
         print(f"[taper] piece is {len(piece.encode('utf-8'))}b, over the {max_bytes}b budget; writing anyway")
