@@ -2,6 +2,7 @@
 
     agentmailkit list                     # show configured jobs
     agentmailkit run <job> [--dry-run]    # run one job (dry-run = build+preview, never send)
+    agentmailkit quickstart [--out DIR]   # render every job to a local HTML gallery; never sends
     agentmailkit plugins                  # show registered plugins
     agentmailkit schedule <backend>       # emit scheduler config (launchd|cron|systemd|github|cloudflare)
 """
@@ -43,6 +44,21 @@ def cmd_run(args, cfg):
     return 0
 
 
+def cmd_quickstart(args, cfg):
+    jobs = _jobs(cfg)
+    if not jobs:
+        print(f"(no jobs found in {cfg.jobs_dir}; nothing to render)")
+        return 0
+    from .quickstart import build_gallery
+    out = Path(args.out) if args.out else None
+    receipt = build_gallery(cfg, jobs, out_dir=out, model=args.model)
+    print(json.dumps(receipt, indent=2, default=str))
+    if receipt["rendered"]:
+        print(f"\nOpen {receipt['index']} to see {len(receipt['rendered'])} sample emails. "
+              f"Nothing was sent.", file=sys.stderr)
+    return 0
+
+
 def cmd_plugins(args, cfg):
     plugins.load_builtins()
     for kind in ("source", "model", "gate", "delivery", "render", "post"):
@@ -69,6 +85,9 @@ def build_parser():
     r = sub.add_parser("run", help="run one job")
     r.add_argument("job")
     r.add_argument("--dry-run", action="store_true", help="build + preview; never send")
+    q = sub.add_parser("quickstart", help="render every job to a local HTML gallery (never sends)")
+    q.add_argument("--out", help="gallery output dir (default: <out_dir>/quickstart)")
+    q.add_argument("--model", help="model backend to render with (default: echo, no keys/network)")
     sub.add_parser("plugins", help="list registered plugins")
     s = sub.add_parser("schedule", help="emit scheduler config")
     s.add_argument("backend", choices=["launchd", "cron", "systemd", "github", "cloudflare"])
@@ -82,7 +101,8 @@ def main(argv=None):
         import os
         os.environ["AGENTMAILKIT_CONFIG"] = args.config
     cfg = _config.load(start)
-    handler = {"list": cmd_list, "run": cmd_run, "plugins": cmd_plugins, "schedule": cmd_schedule}[args.cmd]
+    handler = {"list": cmd_list, "run": cmd_run, "quickstart": cmd_quickstart,
+               "plugins": cmd_plugins, "schedule": cmd_schedule}[args.cmd]
     return handler(args, cfg)
 
 

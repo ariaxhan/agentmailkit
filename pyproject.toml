@@ -43,3 +43,7 @@ amk = "agentmailkit.cli:main"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/agentmailkit"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

@@ -17,6 +17,17 @@ agentmailkit run morning-brief --dry-run
 
 You get a receipt: what each source returned, which gates passed, what it would have sent.
 
+Or render every shipped job at once into a local HTML gallery you can open in a browser:
+
+```bash
+agentmailkit quickstart          # writes out/quickstart/index.html; sends nothing
+```
+
+It forces file delivery and the `echo` model, so it needs no API key, makes no network
+round-trip for the model, and structurally cannot send. Open the printed `index.html` to
+see one sample email per job, each rendered through its theme. This is the fastest way to
+see what agentmailkit produces from your own data before you wire a real inbox.
+
 ## 2. See what your sources actually produced
 
 Set `"model": "echo"` on a job and run it. Echo returns the assembled prompt, so you see the real material verbatim, for free.

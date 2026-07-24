@@ -182,6 +182,22 @@ Tell them, briefly:
 
 ---
 
+## Verify the engine itself
+
+Before changing any core behaviour, run the test suite. It is offline and deterministic
+(the `echo` model plus local sources only, no network, no inbox):
+
+```bash
+pip install -e ".[dev]"
+pytest -q
+```
+
+The suite locks the invariants that must be true every run: a dry-run never sends, a real
+run delivers a file and only a file, every gate rejects what it should, the dedup ledger
+collapses arxiv versions and filters seen items, the quickstart gallery can structurally
+never send, and the Taper interaction check accepts real listeners while rejecting
+timer-only pieces. Anything that must hold every run belongs in a test here, not in a prompt.
+
 ## Reference
 
 | Topic | Doc |
