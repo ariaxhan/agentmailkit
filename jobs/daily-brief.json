@@ -3,11 +3,18 @@
   "schedule": "30 7 * * *",
   "prompt": "daily-brief.md",
   "model": "echo",
-  "sources": ["readme=file:README.md", "commits=shell:git log --oneline -5"],
-  "gates": ["nonempty", "min_length:50"],
+  "sources": [
+    "readme=file:README.md",
+    "commits=shell:git log --oneline -5"
+  ],
+  "gates": [
+    "nonempty",
+    "min_length:50"
+  ],
   "delivery": "stdout",
   "subject": "Daily brief - {date} ({day})",
   "to": "you@example.com",
   "post": [],
-  "status": "active"
+  "status": "active",
+  "render": "slate"
 }

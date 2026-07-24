@@ -8,9 +8,13 @@
     "papers=arxiv:cs.AI:6",
     "learning=arxiv:cs.LG:4"
   ],
-  "gates": ["nonempty", "min_length:200"],
+  "gates": [
+    "nonempty",
+    "min_length:200"
+  ],
   "delivery": "stdout",
   "subject": "Research digest - {date}",
   "post": [],
-  "status": "active"
+  "status": "active",
+  "render": "warm"
 }

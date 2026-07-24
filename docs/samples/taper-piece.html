@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Taper piece - agentmailkit sample</title>
+<style>html,body{margin:0;padding:0;background:#000;}
+.back{position:fixed;top:12px;left:14px;z-index:99;font:13px -apple-system,sans-serif;color:#888;text-decoration:none}</style>
+</head><body>
+<a class="back" href="../index.html">&larr; all samples</a>
+<section data-date='2026-07-23' data-type='research-digest'>
+<style>
+.tp23-wrap{--mx:50%;--my:50%;background:#050807 radial-gradient(circle at var(--mx) var(--my),rgba(60,255,170,.16),transparent 42%);color:#3fffa8;font-family:ui-monospace,'SF Mono','Courier New',monospace;padding:2.4em 1.4em;border-radius:6px;overflow:hidden;box-sizing:border-box}
+.tp23-grid{display:grid;grid-template-columns:repeat(13,1.5em);gap:.15em;justify-content:center;user-select:none;cursor:crosshair}
+.tp23-grid span{display:block;text-align:center;line-height:1.5em;font-size:.95em;color:#1c4a34;transition:color .15s,text-shadow .2s}
+.tp23-grid span.lockT{color:#8dffce;text-shadow:0 0 6px #3fffa8}
+.tp23-grid span.lockN{color:#2c6b4c}
+.tp23-note{margin-top:1.6em;font-size:.72em;letter-spacing:.06em;color:#2c6b4c;text-align:center;opacity:.8}
+.tp23-note b{color:#5ee6ac}
+</style>
+<div class="tp23-wrap" id="tp23w">
+<div class="tp23-grid" id="tp23g"></div>
+<div class="tp23-note">it has read this word <b id="tp23n">2,400,000</b> times and is still not sure</div>
+</div>
+<script>
+(function(){
+var host=document.getElementById('tp23w'),g=document.getElementById('tp23g'),ctr=document.getElementById('tp23n');
+var msg='STILL READING';
+var cols=msg.length,rows=5,mid=2;
+var pool='01#*+=~^%$@&:;.,ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+var cells=[];
+for(var r=0;r<rows;r++){for(var c=0;c<cols;c++){
+var s=document.createElement('span');
+s.textContent=pool[Math.floor(Math.random()*pool.length)];
+g.appendChild(s);
+cells.push({el:s,r:r,c:c,locked:false,target:(r===mid?msg[c]:null)});
+}}
+function rnd(){return pool[Math.floor(Math.random()*pool.length)]}
+setInterval(function(){
+for(var i=0;i<cells.length;i++){var k=cells[i];if(!k.locked)k.el.textContent=rnd();}
+},110);
+var count=2400000;
+setInterval(function(){count+=Math.floor(Math.random()*900)+40;ctr.textContent=count.toLocaleString();},600);
+function nearest(x,y){
+var rect=g.getBoundingClientRect();
+var cw=rect.width/cols,ch=rect.height/rows;
+var cc=Math.floor((x-rect.left)/cw),rr=Math.floor((y-rect.top)/ch);
+return {r:rr,c:cc};
+}
+host.addEventListener('mousemove',function(e){
+host.style.setProperty('--mx',(e.clientX-host.getBoundingClientRect().left)+'px');
+host.style.setProperty('--my',(e.clientY-host.getBoundingClientRect().top)+'px');
+var n=nearest(e.clientX,e.clientY);
+for(var i=0;i<cells.length;i++){
+var k=cells[i];
+var d=Math.hypot(k.r-n.r,k.c-n.c);
+if(d<=1.4 && !k.locked){
+k.locked=true;
+if(k.target){k.el.textContent=k.target===' '?'\u00A0':k.target;k.el.classList.add('lockT');}
+else{k.el.classList.add('lockN');}
+}
+}
+});
+host.addEventListener('mouseleave',function(){
+for(var i=0;i<cells.length;i++){var k=cells[i];k.locked=false;k.el.classList.remove('lockT','lockN');}
+});
+})();
+</script>
+</section>
+</body></html>

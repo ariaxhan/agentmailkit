@@ -2,6 +2,12 @@
 
 **Scheduled, LLM-written email digests that run on your machine, read your own files, and send from your own inbox.**
 
+### → [See real emails it produces](https://ariaxhan.github.io/agentmailkit/)
+
+Live samples, generated end to end: real APIs, a real model, the deterministic renderer. Nothing hand-written or touched up. Start there, it explains the project faster than this README can.
+
+---
+
 Declare a job: a schedule, a prompt, some data sources, a delivery address. agentmailkit runs it on a cron, feeds your local data to an LLM, and emails you the result. A morning news brief, a research digest, a "what changed in my repos" summary, a content-idea bank. Each one is a JSON file plus a prompt, not a bespoke script.
 
 ```bash
@@ -172,10 +178,6 @@ pip install agentmailkit[all]          # + every model and delivery backend
 ```
 
 The core has **zero required dependencies**. Backends pull their own libraries only when enabled.
-
-## See it
-
-**[Live sample gallery](https://ariaxhan.github.io/agentmailkit/)** - real emails, real APIs, real model output, rendered by the theme. Nothing hand-touched.
 
 ## Try it now
 
