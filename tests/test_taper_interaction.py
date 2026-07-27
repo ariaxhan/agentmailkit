@@ -6,7 +6,6 @@ from __future__ import annotations
 
 from agentmailkit.posts.taper import INTERACTION_RE
 
-
 INTERACTIVE = [
     "<section><script>el.addEventListener('mousemove', f)</script></section>",
     "<section><script>document.addEventListener('click', g)</script></section>",

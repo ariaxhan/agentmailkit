@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from agentmailkit.quickstart import build_gallery, _preview_job
+from agentmailkit.quickstart import _preview_job, build_gallery
 from agentmailkit.spec import Job, load_jobs
 
 

@@ -47,7 +47,12 @@ Verify:
 ```bash
 agentmailkit --version
 agentmailkit plugins              # lists every registered source, model, gate, delivery, theme
+agentmailkit quickstart           # renders all five example jobs to a local HTML gallery, sends nothing
 ```
+
+`quickstart` is the fastest way to show them what the output actually looks like before you
+have configured anything. It forces `echo` as the model and `file` as delivery in code, so it
+needs no keys and structurally cannot email anyone.
 
 ---
 
@@ -74,7 +79,9 @@ Delivery-specific settings go under `extra`. See [docs/delivery.md](docs/deliver
 
 ## 4. Build their job
 
-Start from the closest shipped job rather than a blank file. The repo ships:
+Start from the closest shipped job rather than a blank file. Run `agentmailkit init` first: it
+copies all five into `./jobs` so you can edit them. It never overwrites an existing file, so it
+is safe to re-run. The five are:
 
 | Job | Sources | Good starting point for |
 |---|---|---|

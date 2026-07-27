@@ -44,6 +44,33 @@ amk = "agentmailkit.cli:main"
 [tool.hatch.build.targets.wheel]
 packages = ["src/agentmailkit"]
 
+# The five example jobs must travel with the wheel, or a fresh `pip install agentmailkit`
+# has no jobs at all and the README's own first command renders nothing. They are copied
+# in from the repo-root `jobs/` at build time rather than duplicated into src/, so git
+# holds exactly one copy and the shipped set can never drift from the developed set.
+# See src/agentmailkit/bundled.py for the matching lookup.
+[tool.hatch.build.targets.wheel.force-include]
+"jobs" = "agentmailkit/_bundled/jobs"
+
+# The sdist ships the whole working tree by default, which swept in this repo's local
+# agent scratch state: `_meta/agentdb/agent.db` (session checkpoints, error traces, and
+# 97 absolute `/Users/<name>/...` paths) plus `_meta/logs/actions.jsonl`. None of that is
+# gitignored-into-safety, because sdist inclusion is independent of git. A PyPI upload is
+# permanent, so the exclusions below are load-bearing privacy, not tidiness. Verify with
+# `tar tzf dist/*.tar.gz` before every release.
+[tool.hatch.build.targets.sdist]
+exclude = [
+    "_meta",
+    ".venv",
+    "venv",
+    ".claude",
+    ".github",
+    "out",
+    "*.pickle",
+    ".agentmailkit.json",
+    "secrets.json",
+]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"

@@ -21,7 +21,18 @@ def test_plugins_lists_builtins(capsys, tmp_cfg, monkeypatch):
     assert "echo" in out and "warm" in out and "taper" in out
 
 
-def test_list_with_no_jobs(capsys, tmp_cfg, monkeypatch):
+def test_list_with_no_local_jobs_shows_the_bundled_set(capsys, tmp_cfg, monkeypatch):
+    """An empty working directory is the new-user case, and it must not look broken."""
+    assert _run(["list"], tmp_cfg, monkeypatch) == 0
+    captured = capsys.readouterr()
+    assert "morning-brief" in captured.out
+    # The user is told these are examples and how to make them theirs.
+    assert "agentmailkit init" in captured.err
+
+
+def test_list_reports_empty_only_when_nothing_ships(capsys, tmp_cfg, monkeypatch):
+    """The old dead-end message is still correct when there is genuinely nothing to show."""
+    monkeypatch.setattr("agentmailkit.cli.bundled_jobs_dir", lambda: None)
     assert _run(["list"], tmp_cfg, monkeypatch) == 0
     assert "no jobs found" in capsys.readouterr().out
 
@@ -30,7 +41,8 @@ def test_run_unknown_job_errors(tmp_cfg, monkeypatch):
     assert _run(["run", "does-not-exist"], tmp_cfg, monkeypatch) == 2
 
 
-def test_quickstart_with_no_jobs_is_clean(capsys, tmp_cfg, monkeypatch):
+def test_quickstart_with_nothing_available_is_clean(capsys, tmp_cfg, monkeypatch):
+    monkeypatch.setattr("agentmailkit.cli.bundled_jobs_dir", lambda: None)
     assert _run(["quickstart"], tmp_cfg, monkeypatch) == 0
     assert "nothing to render" in capsys.readouterr().out
 

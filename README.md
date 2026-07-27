@@ -8,7 +8,9 @@ Live samples, generated end to end. Nothing hand-written. Start there, it explai
 
 ```bash
 pip install agentmailkit
-agentmailkit run morning-brief --dry-run
+agentmailkit run morning-brief --dry-run   # five example jobs ship with it, so this works immediately
+agentmailkit quickstart                    # render all five to a local HTML gallery; never sends
+agentmailkit init                          # copy them into ./jobs to make them yours
 ```
 
 MIT licensed. No account, no vendor, no cloud required.
@@ -104,9 +106,9 @@ The core has **zero required dependencies**. Backends pull their own libraries o
 
 ## Status
 
-Alpha (0.1.0). Engine, plugins, dedup, themes, delivery and scheduler emitters all work and are exercised end to end against live APIs.
+Alpha (0.1.0). Engine, plugins, dedup, themes, delivery and scheduler emitters all work and are exercised end to end against live APIs. `quickstart` renders a full sample set from your own data on first run, with no keys and no network round-trip, and cannot send by construction.
 
-Next: a `quickstart` command that generates a working sample set from your own data on first run.
+Known rough edges: the five shipped jobs carry example defaults (`weather:Brooklyn`, a fixed news trio) that you are expected to edit after `agentmailkit init`.
 
 ## Contributing
 
