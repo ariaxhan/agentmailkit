@@ -34,8 +34,13 @@ all = ["agentmailkit[gmail,anthropic,openai]"]
 dev = ["pytest", "ruff"]
 
 [project.urls]
-Homepage = "https://github.com/ariaxhan/agentmailkit"
+# Homepage points at the author site, not the repo. PyPI project pages carry
+# real authority and this package's only outbound links went to GitHub, so the
+# domain the work is actually published under got nothing back.
+Homepage = "https://ariaxhan.com"
+Documentation = "https://ariaxhan.com/projects/agentmailkit/"
 Source = "https://github.com/ariaxhan/agentmailkit"
+Issues = "https://github.com/ariaxhan/agentmailkit/issues"
 
 [project.scripts]
 agentmailkit = "agentmailkit.cli:main"
