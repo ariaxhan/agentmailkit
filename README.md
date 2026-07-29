@@ -1,5 +1,9 @@
 # agentmailkit
 
+[![PyPI](https://img.shields.io/pypi/v/agentmailkit.svg)](https://pypi.org/project/agentmailkit/)
+[![Python 3.9+](https://img.shields.io/badge/python-3.9%2B-blue.svg)](https://pypi.org/project/agentmailkit/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 **Scheduled, LLM-written email digests that run on your machine, read your own files, and send from your own inbox.**
 
 ### → [See real emails it produces](https://ariaxhan.github.io/agentmailkit/)
@@ -104,9 +108,11 @@ pip install agentmailkit[all]       # + Anthropic and OpenAI backends
 
 The core has **zero required dependencies**. Backends pull their own libraries only when enabled.
 
+Published on PyPI: [pypi.org/project/agentmailkit](https://pypi.org/project/agentmailkit/). Requires Python 3.9 or newer.
+
 ## Status
 
-Alpha (0.1.0). Engine, plugins, dedup, themes, delivery and scheduler emitters all work and are exercised end to end against live APIs. `quickstart` renders a full sample set from your own data on first run, with no keys and no network round-trip, and cannot send by construction.
+Alpha (0.1.0, on PyPI). Engine, plugins, dedup, themes, delivery and scheduler emitters all work and are exercised end to end against live APIs. `quickstart` renders a full sample set from your own data on first run, with no keys and no network round-trip, and cannot send by construction.
 
 Known rough edges: the five shipped jobs carry example defaults (`weather:Brooklyn`, a fixed news trio) that you are expected to edit after `agentmailkit init`.
 
